@@ -7,7 +7,6 @@ var GAME = {
 var BOMBS = [];
 
 var countOfBombs = 2;
-var bombSpeed = 20;
 var bombSize = 20;
 
 var InfoWindow = {
@@ -164,10 +163,15 @@ function onKeyDown(event) {
 }
 
 function play() {
-    drawFrame();
-    updateBombs();
-    updatePlayer();
-    requestAnimationFrame(play);
+    if (GAME.ifLost === false) {
+        drawFrame();
+        updateBombs();
+        updatePlayer();
+        requestAnimationFrame(play);
+    }
+    else {
+        alert("You lose!");
+    }
 }
 
 InitBombs();
