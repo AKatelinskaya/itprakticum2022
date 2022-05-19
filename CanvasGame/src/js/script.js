@@ -172,4 +172,5 @@ function play() {
 
 InitBombs();
 initEventListeners();
+console.log("game-for-students");
 play();
