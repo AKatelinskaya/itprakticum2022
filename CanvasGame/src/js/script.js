@@ -24,7 +24,7 @@ var PLAYER = {
     height: GAME.height * 0.03,
     width: GAME.width * 0.07,
     score: 0,
-    lives: 300,
+    lives: 3,
     speedX: 20,
 }
 
@@ -40,7 +40,7 @@ function InitBombs() {
         var initSpeed = Math.floor(Math.random() * 20 + 5);
         BOMBS[i] = {
             x: initX,
-            y: 0,
+            y: -20,
             speedy: initSpeed,
             size: 20,
             ifDestroyed: false,
@@ -115,14 +115,13 @@ function updateBombs() {
             BOMBS[i].y = 20;
             BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             PLAYER.score++;
-            // BOMBS[i].speedy = Math.floor(Math.random() * 20 + 5);
             BOMBS[i].speedy = 5;
             if (PLAYER.score > limit) {
                 var initX = Math.floor(Math.random() * (GAME.width - bombSize));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
                 BOMBS[countOfBombs] = {
                     x: initX,
-                    y: 0,
+                    y: -20,
                     speedy: initSpeed,
                     size: 20,
                 }
@@ -242,7 +241,7 @@ function play() {
         requestAnimationFrame(play);
     }
     else {
-        // alert("You lose!");
+        alert("You lose!");
     }
 }
 
