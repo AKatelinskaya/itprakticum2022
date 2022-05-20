@@ -24,7 +24,7 @@ var bombSize = 20
 
 var BOMB = {
     x: 50,
-    y: 0,
+    y: -20,
     size: bombSize,
     speedy: 20,
 
@@ -82,7 +82,7 @@ function updateBombs() {
             GAME.ifLost = true;
         } else {
             PLAYER.lives -= 1;
-            BOMB.y = 0;
+            BOMB.y = -20;
             BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size));
         }
     }
@@ -134,6 +134,8 @@ function play() {
         updatePlayer();
         requestAnimationFrame(play);
     }
+    else
+        alert("You lose!");
 }
 
 initEventListeners();
