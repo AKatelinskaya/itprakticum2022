@@ -227,7 +227,7 @@ function destroyTarget() {
                     ifDestroyed: false,
                 }
                 ifTargetDestroyed = true;
-                PLAYER.score += 2;
+                PLAYER.score += 1;
                 j--;
             }
         }
