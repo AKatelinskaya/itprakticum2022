@@ -37,7 +37,7 @@ function InitBombs() {
         var initSpeed = Math.floor(Math.random() * 20 + 5);
         BOMBS[i] = {
             x: initX,
-            y: 0,
+            y: -20,
             speedy: initSpeed,
             size: 20,
         }
@@ -100,7 +100,7 @@ function updateBombs() {
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
                 BOMBS[countOfBombs] = {
                     x: initX,
-                    y: 0,
+                    y: -20,
                     speedy: initSpeed,
                     size: 20,
                 }
