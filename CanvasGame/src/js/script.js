@@ -5,10 +5,15 @@ var GAME = {
 }
 
 var BOMBS = [];
+var TARGETS = [];
 var bullets = [];
 
 var countOfBombs = 2;
+var countOfTargets = 2;
+
+var targetSize = 20;
 var bombSize = 20;
+
 
 var limit = 20;
 
@@ -33,7 +38,7 @@ var canvasContext = canvas.getContext("2d");
 canvas.width = GAME.width + InfoWindow.width;
 canvas.height = GAME.height;
 
-function InitBombs() {
+function InitObj() {
     var i = 0;
     do {
         var initX = Math.floor(Math.random() * (GAME.width - bombSize));
@@ -43,13 +48,20 @@ function InitBombs() {
             y: -20,
             speedy: initSpeed,
             size: 20,
+            // ifDestroyed: false,
+        }
+        TARGETS[i] = {
+            x: initX,
+            y: -20,
+            speedy: initSpeed,
+            size: 20,
             ifDestroyed: false,
         }
-        console.log(i);
         i++;
     }
     while (i < countOfBombs)
 }
+
 
 function initBullets() {
     var BULLET = {
@@ -83,6 +95,17 @@ function drawBomb() {
     }
 }
 
+function drawTarget() {
+    for (var i = 0; i < countOfTargets; i++) {
+        if (!TARGETS[i].ifDestroyed) {
+            canvasContext.fillStyle = "green";
+            canvasContext.beginPath();
+            canvasContext.arc(TARGETS[i].x, TARGETS[i].y, TARGETS[i].size, 0, Math.PI * 2);
+            canvasContext.fill();
+        }
+    }
+}
+
 function drawBullets() {
     for (var i = 0; i < bullets.length; i++) {
         canvasContext.fillStyle = "black";
@@ -109,12 +132,11 @@ function updateBombs() {
         BOMBS[i].y += BOMBS[i].speedy;
         var losePositionY = BOMBS[i].y + BOMBS[i].size / 2 >= PLAYER.y;
         var losePositionX = (BOMBS[i].x - BOMBS[i].size / 2 <= PLAYER.x + PLAYER.width) && (BOMBS[i].x + BOMBS[i].size / 2 >= PLAYER.x);
-        var scoreUpdate = (BOMBS[i].y >= GAME.height - BOMBS[i].size) && !GAME.ifLost;
+        var respUpdate = (BOMBS[i].y >= GAME.height - BOMBS[i].size) && !GAME.ifLost;
 
-        if (scoreUpdate) {
+        if (respUpdate) {
             BOMBS[i].y = 20;
             BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
-            PLAYER.score++;
             BOMBS[i].speedy = 5;
             if (PLAYER.score > limit) {
                 var initX = Math.floor(Math.random() * (GAME.width - bombSize));
@@ -128,7 +150,6 @@ function updateBombs() {
                 countOfBombs++;
                 limit += limit;
             }
-            console.log("score: " + PLAYER.score);
         }
         if (losePositionX && losePositionY && !GAME.ifLost) {
             if (PLAYER.lives === 0) {
@@ -137,6 +158,34 @@ function updateBombs() {
                 PLAYER.lives -= 1;
                 BOMBS[i].y = 0;
                 BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
+            }
+        }
+        i++;
+    }
+    while (i < countOfBombs)
+}
+
+function updateTargets() {
+    var i = 0;
+    do {
+        TARGETS[i].y += TARGETS[i].speedy;
+        var respUpdate = (TARGETS[i].y >= GAME.height - TARGETS[i].size) && !GAME.ifLost;
+
+        if (respUpdate) {
+            TARGETS[i].y = 20;
+            TARGETS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
+            TARGETS[i].speedy = 5;
+            if (PLAYER.score > limit) {
+                var initX = Math.floor(Math.random() * (GAME.width - bombSize));
+                var initSpeed = Math.floor(Math.random() * 20 + 5);
+                TARGETS[countOfBombs] = {
+                    x: initX,
+                    y: -20,
+                    speedy: initSpeed,
+                    size: 20,
+                }
+                countOfTargets++;
+                limit += limit;
             }
         }
         i++;
@@ -161,30 +210,28 @@ function updatePlayer() {
     }
 }
 
-function destroyBomb() {
+function destroyTarget() {
     for (var i = 0; i < bullets.length; i++) {
-        var ifBombDestoyed = false;
-        for (var j = 0; j < countOfBombs; j++) {
-            var destroyBombX = (bullets[i].x > BOMBS[j].x - BOMBS[j].size) && (bullets[i].x < BOMBS[j].x + BOMBS[j]. size);
-            var destroyBombY = (bullets[i].y <= BOMBS[j].y + BOMBS[j].size / 2);
-            console.log(destroyBombX)
-            if (destroyBombX) console.log("X");
-            if (destroyBombX && destroyBombY) {
-                var initX = Math.floor(Math.random() * (GAME.width - bombSize));
+        var ifTargetDestroyed = false;
+        for (var j = 0; j < countOfTargets; j++) {
+            var destroyTargetX = (bullets[i].x > TARGETS[j].x - TARGETS[j].size) && (bullets[i].x < TARGETS[j].x + TARGETS[j]. size);
+            var destroyTargetY = (bullets[i].y <= TARGETS[j].y + TARGETS[j].size / 2);
+            if (destroyTargetX && destroyTargetY) {
+                var initX = Math.floor(Math.random() * (GAME.width - targetSize));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
-                BOMBS[j] = {
+                TARGETS[j] = {
                     x: initX,
-                    y: 0,
+                    y: -20,
                     speedy: initSpeed,
                     size: 20,
                     ifDestroyed: false,
                 }
-                ifBombDestoyed = true;
+                ifTargetDestroyed = true;
+                PLAYER.score += 2;
                 j--;
-                console.log("boom!")
             }
         }
-        if (ifBombDestoyed) {
+        if (ifTargetDestroyed) {
             bullets.splice(i, 1);
             i--;
         }
@@ -197,7 +244,8 @@ function drawFrame() {
     drawPlayer();
     drawBomb();
     drawBullets();
-    drawInfoWindow()
+    drawTarget();
+    drawInfoWindow();
 }
 
 
@@ -235,15 +283,16 @@ function play() {
         drawFrame();
         updateBombs();
         updateBullets();
+        updateTargets();
         updatePlayer();
-        destroyBomb();
+        destroyTarget();
         requestAnimationFrame(play);
     }
     else {
-        alert("You lose!");
+        // alert("You lose!");
     }
 }
 
-InitBombs();
+InitObj();
 initEventListeners();
 play();
