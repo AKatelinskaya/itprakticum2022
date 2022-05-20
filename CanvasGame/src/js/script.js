@@ -167,7 +167,6 @@ function destroyBomb() {
         for (var j = 0; j < countOfBombs; j++) {
             var destroyBombX = (bullets[i].x > BOMBS[j].x - BOMBS[j].size) && (bullets[i].x < BOMBS[j].x + BOMBS[j]. size);
             var destroyBombY = (bullets[i].y <= BOMBS[j].y + BOMBS[j].size / 2);
-            // console.log(bullets[i]);
             console.log(destroyBombX)
             if (destroyBombX) console.log("X");
             if (destroyBombX && destroyBombY) {
