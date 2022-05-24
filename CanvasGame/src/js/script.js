@@ -110,12 +110,11 @@ function updateBombs() {
             console.log("score: " + PLAYER.score);
         }
         if (losePositionX && losePositionY && !GAME.ifLost) {
+            PLAYER.lives -= 1;
+            BOMBS[i].y = 0;
+            BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             if (PLAYER.lives === 0) {
                 GAME.ifLost = true;
-            } else {
-                PLAYER.lives -= 1;
-                BOMBS[i].y = 0;
-                BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             }
         }
         i++;
@@ -153,6 +152,7 @@ function onMouseMove(event) {
         PLAYER.x = GAME.width - PLAYER.width;
     }
 }
+
 function onKeyDown(event) {
     if ((event.key === "ArrowLeft") && (PLAYER.x > 0)) {
         PLAYER.x -= PLAYER.speedX;
@@ -168,8 +168,8 @@ function play() {
         updateBombs();
         updatePlayer();
         requestAnimationFrame(play);
-    }
-    else {
+    } else {
+        drawFrame();
         alert("You lose!");
     }
 }
