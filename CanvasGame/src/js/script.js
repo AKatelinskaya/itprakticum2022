@@ -14,7 +14,6 @@ var countOfTargets = 2;
 var targetSize = 20;
 var bombSize = 20;
 
-
 var limit = 20;
 var limitHeal = 30;
 var dropHeal = false;
@@ -152,7 +151,7 @@ function updateBombs() {
         if (respUpdate) {
             BOMBS[i].y = 20;
             BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
-            BOMBS[i].speedy = 5;
+            BOMBS[i].speedy = initSpeed = Math.floor(Math.random() * 20 + 5);
             if (PLAYER.score > limitTarget) {
                 var initX = Math.floor(Math.random() * (GAME.width - bombSize));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
@@ -187,7 +186,7 @@ function updateTargets() {
         if (respUpdate) {
             TARGETS[i].y = 20;
             TARGETS[i].x = Math.floor(Math.random() * (GAME.width - TARGETS[i].size));
-            TARGETS[i].speedy = 5;
+            TARGETS[i].speedy = initSpeed = Math.floor(Math.random() * 20 + 5);
             if (PLAYER.score > limitTarget) {
                 var initX = Math.floor(Math.random() * (GAME.width - TARGETS[i].size));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
@@ -334,7 +333,7 @@ function play() {
         alert("You lose!");
     }
 }
-PLAYER.lives = 3;
+
 InitObj();
 initEventListeners();
 play();
