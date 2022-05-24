@@ -78,12 +78,11 @@ function updateBombs() {
         BOMB.speedy = Math.floor(Math.random() * 20 + 5);
     }
     if (losePositionX && losePositionY && !GAME.ifLost) {
+        PLAYER.lives -= 1;
+        BOMB.y = -20;
+        BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size));
         if (PLAYER.lives === 0) {
             GAME.ifLost = true;
-        } else {
-            PLAYER.lives -= 1;
-            BOMB.y = -20;
-            BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size));
         }
     }
 }
@@ -133,9 +132,10 @@ function play() {
         updateBombs();
         updatePlayer();
         requestAnimationFrame(play);
-    }
-    else
+    } else {
+        drawFrame();
         alert("You lose!");
+    }
 }
 
 initEventListeners();
