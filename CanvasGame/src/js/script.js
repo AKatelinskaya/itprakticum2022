@@ -331,7 +331,6 @@ function play() {
         requestAnimationFrame(play);
     }
     else {
-        console.log("LOSE");
         alert("You lose!");
     }
 }
