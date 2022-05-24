@@ -115,7 +115,7 @@ function updateBombs() {
             BOMBS[i].y = 20;
             BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             PLAYER.score++;
-            BOMBS[i].speedy = 5;
+            BOMBS[i].speedy = initSpeed = Math.floor(Math.random() * 20 + 5);
             if (PLAYER.score > limit) {
                 var initX = Math.floor(Math.random() * (GAME.width - bombSize));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
@@ -128,15 +128,13 @@ function updateBombs() {
                 countOfBombs++;
                 limit += limit;
             }
-            console.log("score: " + PLAYER.score);
         }
-        if (losePositionX && losePositionY && !GAME.ifLost) {
+        if (losePositionX && losePositionY) {
+            PLAYER.lives -= 1;
+            BOMBS[i].y = -20;
+            BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             if (PLAYER.lives === 0) {
                 GAME.ifLost = true;
-            } else {
-                PLAYER.lives -= 1;
-                BOMBS[i].y = 0;
-                BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             }
         }
         i++;
@@ -181,7 +179,6 @@ function destroyBomb() {
                 }
                 ifBombDestoyed = true;
                 j--;
-                console.log("boom!")
             }
         }
         if (ifBombDestoyed) {
@@ -240,6 +237,7 @@ function play() {
         requestAnimationFrame(play);
     }
     else {
+        drawFrame();
         alert("You lose!");
     }
 }
