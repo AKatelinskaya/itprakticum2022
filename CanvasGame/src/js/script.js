@@ -330,6 +330,7 @@ function play() {
         requestAnimationFrame(play);
     }
     else {
+        drawFrame();
         alert("You lose!");
     }
 }
