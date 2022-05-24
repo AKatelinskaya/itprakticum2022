@@ -16,6 +16,9 @@ var bombSize = 20;
 
 
 var limit = 20;
+var limitHeal = 30;
+var dropHeal = false;
+var limitTarget = 35;
 
 var InfoWindow = {
     width: 200,
@@ -33,6 +36,13 @@ var PLAYER = {
     speedX: 20,
 }
 
+var HEAL = {
+    x: Math.floor(Math.random() * (GAME.width - 20)),
+    y: -20,
+    size: 20,
+    speedy: Math.floor(Math.random() * 20 + 5),
+}
+
 var canvas = document.getElementById("canvas");
 var canvasContext = canvas.getContext("2d");
 canvas.width = GAME.width + InfoWindow.width;
@@ -44,14 +54,13 @@ function InitObj() {
         var initX = Math.floor(Math.random() * (GAME.width - bombSize));
         var initSpeed = Math.floor(Math.random() * 20 + 5);
         BOMBS[i] = {
-            x: initX,
+            x: 20 + initX,
             y: -20,
             speedy: initSpeed,
             size: 20,
-            // ifDestroyed: false,
         }
         TARGETS[i] = {
-            x: initX,
+            x: 20 + initX,
             y: -20,
             speedy: initSpeed,
             size: 20,
@@ -61,7 +70,6 @@ function InitObj() {
     }
     while (i < countOfBombs)
 }
-
 
 function initBullets() {
     var BULLET = {
@@ -113,6 +121,13 @@ function drawBullets() {
     }
 }
 
+function drawHeal() {
+    canvasContext.fillStyle = "white";
+    canvasContext.beginPath();
+    canvasContext.arc(HEAL.x, HEAL.y, HEAL.size, 0, Math.PI * 2);
+    canvasContext.fill()
+}
+
 function drawInfoWindow() {
     canvasContext.fillStyle = "black";
     canvasContext.beginPath();
@@ -138,7 +153,7 @@ function updateBombs() {
             BOMBS[i].y = 20;
             BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             BOMBS[i].speedy = 5;
-            if (PLAYER.score > limit) {
+            if (PLAYER.score > limitTarget) {
                 var initX = Math.floor(Math.random() * (GAME.width - bombSize));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
                 BOMBS[countOfBombs] = {
@@ -151,13 +166,12 @@ function updateBombs() {
                 limit += limit;
             }
         }
-        if (losePositionX && losePositionY && !GAME.ifLost) {
+        if (losePositionX && losePositionY) {
+            PLAYER.lives -= 1;
+            BOMBS[i].y = -20;
+            BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             if (PLAYER.lives === 0) {
                 GAME.ifLost = true;
-            } else {
-                PLAYER.lives -= 1;
-                BOMBS[i].y = 0;
-                BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             }
         }
         i++;
@@ -170,27 +184,53 @@ function updateTargets() {
     do {
         TARGETS[i].y += TARGETS[i].speedy;
         var respUpdate = (TARGETS[i].y >= GAME.height - TARGETS[i].size) && !GAME.ifLost;
-
         if (respUpdate) {
             TARGETS[i].y = 20;
-            TARGETS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
+            TARGETS[i].x = Math.floor(Math.random() * (GAME.width - TARGETS[i].size));
             TARGETS[i].speedy = 5;
-            if (PLAYER.score > limit) {
-                var initX = Math.floor(Math.random() * (GAME.width - bombSize));
+            if (PLAYER.score > limitTarget) {
+                var initX = Math.floor(Math.random() * (GAME.width - TARGETS[i].size));
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
-                TARGETS[countOfBombs] = {
+                TARGETS[countOfTargets] = {
                     x: initX,
                     y: -20,
                     speedy: initSpeed,
                     size: 20,
                 }
                 countOfTargets++;
-                limit += limit;
+                limitTarget += limitTarget;
             }
         }
         i++;
     }
-    while (i < countOfBombs)
+    while (i < countOfTargets)
+}
+
+function updateHeal() {
+    if (PLAYER.score === limitHeal){
+        dropHeal = true;
+        limitHeal += + 25;
+    }
+    if (dropHeal === true) {
+        HEAL.y += HEAL.speedy;
+        var respUpdate = (HEAL.y >= GAME.height - HEAL.size) && !GAME.ifLost;
+        var healPositionY = HEAL.y + HEAL.size / 2 >= PLAYER.y;
+        var healPositionX = (HEAL.x - HEAL.size / 2 <= PLAYER.x + PLAYER.width) && (HEAL.x + HEAL.size / 2 >= PLAYER.x);
+        if (respUpdate) {
+            HEAL.y = -20;
+            HEAL.x = Math.floor(Math.random() * (GAME.width - HEAL.size));
+            HEAL.speedy = Math.floor(Math.random() * 20 + 5);
+            dropHeal = false;
+        }
+        if (healPositionX && healPositionY && !GAME.ifLost) {
+            if (PLAYER.lives < 3) {
+                PLAYER.lives += 1;
+            }
+            HEAL.y = -20;
+            HEAL.x = Math.floor(Math.random() * (GAME.width - HEAL.size));
+            dropHeal = false;
+        }
+    }
 }
 
 function updateBullets() {
@@ -245,6 +285,7 @@ function drawFrame() {
     drawBomb();
     drawBullets();
     drawTarget();
+    drawHeal();
     drawInfoWindow();
 }
 
@@ -285,14 +326,16 @@ function play() {
         updateBullets();
         updateTargets();
         updatePlayer();
+        updateHeal();
         destroyTarget();
         requestAnimationFrame(play);
     }
     else {
-        // alert("You lose!");
+        console.log("LOSE");
+        alert("You lose!");
     }
 }
-
+PLAYER.lives = 3;
 InitObj();
 initEventListeners();
 play();
