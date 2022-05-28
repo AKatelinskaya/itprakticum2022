@@ -1,21 +1,21 @@
+//Создаем экран, задаем размеры окна с игрой, добавляем переменную для проверки поражения, задаем цвет фона
 var GAME = {
     width: 600,
     height: 870,
     ifLost: false,
+    backgroundColor: "red"
 }
 
-var BOMBS = [];
-
-var countOfBombs = 2;
-var bombSpeed = 20;
-var bombSize = 20;
-
+//Добавляем окно с доп. информацией(жизни и очки), задаем ширину, длинну, положение на экране, задаем цвет фона и текста
 var InfoWindow = {
     width: 200,
     height: GAME.height,
-    x: GAME.width
+    x: GAME.width,
+    backgroundColor: "black",
+    textColor: "white"
 }
 
+//Создаем игрока, адаптируем размеры и положение под экран, добавляем переменные счетчика очков, жизней, также даем игроку скорость, цвет
 var PLAYER = {
     x: GAME.width * 0.45,
     y: GAME.height * 0.9,
@@ -24,55 +24,55 @@ var PLAYER = {
     score: 0,
     lives: 3,
     speedX: 20,
+    color: "white"
 }
 
+//Добавляем константы для случайно генерации бомд
+var maxSize = 50;
+var maxSpeed = 20;
+
+//Создаем бомбу, случайное расположение по экрану, случайный размер, положение за экраном, случайная скорость и указываем цвет
+var BOMB = {
+    x: Math.floor(Math.random() * (GAME.width - maxSize * 2) + maxSize),
+    size: Math.floor(Math.random() * maxSize + 5),
+    y: -maxSize,
+    speedy: Math.floor(Math.random() * maxSpeed + 5),
+    color: "black"
+}
+
+//Создание инструментов рисования и разметки границ холста
 var canvas = document.getElementById("canvas");
 var canvasContext = canvas.getContext("2d");
 canvas.width = GAME.width + InfoWindow.width;
 canvas.height = GAME.height;
 
-function InitBombs() {
-    var i = 0;
-    do {
-        var initX = Math.floor(Math.random() * (GAME.width - bombSize));
-        var initSpeed = Math.floor(Math.random() * 20 + 5);
-        BOMBS[i] = {
-            x: initX,
-            y: 0,
-            speedy: initSpeed,
-            size: 20,
-        }
-        console.log(i);
-        i++;
-    }
-    while (i < countOfBombs)
-}
-
+//Отрисовка фона
 function drawBackground() {
-    canvasContext.fillStyle = "red";
+    canvasContext.fillStyle = GAME.backgroundColor;
     canvasContext.fillRect(0, 0, GAME.width, GAME.height);
 }
 
+//Отрисовываем игрока
 function drawPlayer() {
-    canvasContext.fillStyle = "white";
+    canvasContext.fillStyle = PLAYER.color;
     canvasContext.fillRect(PLAYER.x, PLAYER.y, PLAYER.width, PLAYER.height);
 }
 
+//Отрисовываем бомбу
 function drawBomb() {
-    for (var i = 0; i < countOfBombs; i++) {
-        canvasContext.fillStyle = "black";
-        canvasContext.beginPath();
-        canvasContext.arc(BOMBS[i].x, BOMBS[i].y, BOMBS[i].size, 0, Math.PI * 2);
-        canvasContext.fill();
-    }
+    canvasContext.fillStyle = BOMB.color;
+    canvasContext.beginPath();
+    canvasContext.arc(BOMB.x, BOMB.y, BOMB.size, 0, Math.PI * 2);
+    canvasContext.fill();
 }
 
+//Отрисовываем окно для вывода доп. данных и выводим там сами данные
 function drawInfoWindow() {
-    canvasContext.fillStyle = "black";
+    canvasContext.fillStyle = InfoWindow.backgroundColor;
     canvasContext.beginPath();
     canvasContext.rect(InfoWindow.x, 0, InfoWindow.width, InfoWindow.height);
     canvasContext.fill();
-    canvasContext.fillStyle = "white";
+    canvasContext.fillStyle = InfoWindow.textColor;
     canvasContext.font = "30px serif";
     canvasContext.fillText("Your score:", InfoWindow.x + 10, 50);
     canvasContext.fillText(PLAYER.score, InfoWindow.x + 10, 85);
@@ -80,59 +80,43 @@ function drawInfoWindow() {
     canvasContext.fillText(PLAYER.lives, InfoWindow.x + 10, 155);
 }
 
-var limit = 20;
-
-function updateBombs() {
-    var i = 0;
-    do {
-        BOMBS[i].y += BOMBS[i].speedy;
-        var losePositionY = BOMBS[i].y + BOMBS[i].size / 2 >= PLAYER.y;
-        var losePositionX = (BOMBS[i].x - BOMBS[i].size / 2 <= PLAYER.x + PLAYER.width) && (BOMBS[i].x + BOMBS[i].size / 2 >= PLAYER.x);
-        var scoreUpdate = (BOMBS[i].y >= GAME.height - BOMBS[i].size) && !GAME.ifLost;
-        var updateBomb = (BOMBS[i].y >= GAME.height)
-
-        if (scoreUpdate) {
-            BOMBS[i].y = 20;
-            BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
-            PLAYER.score++;
-            BOMBS[i].speedy = Math.floor(Math.random() * 20 + 5);
-            if (PLAYER.score > limit) {
-                var initX = Math.floor(Math.random() * (GAME.width - bombSize));
-                var initSpeed = Math.floor(Math.random() * 20 + 5);
-                BOMBS[countOfBombs] = {
-                    x: initX,
-                    y: 0,
-                    speedy: initSpeed,
-                    size: 20,
-                }
-                countOfBombs++;
-                limit += limit;
-            }
-            console.log("score: " + PLAYER.score);
-        }
-        if (losePositionX && losePositionY && !GAME.ifLost) {
-            if (PLAYER.lives === 0) {
-                GAME.ifLost = true;
-            } else {
-                PLAYER.lives -= 1;
-                BOMBS[i].y = 0;
-                BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
-            }
-        }
-        i++;
-    }
-    while (i < countOfBombs)
+//Создаем процедуру случайной генерации бомбы после ее падения или столкновения
+function respawnBomb(){
+    BOMB.size = Math.floor(Math.random() * maxSize + 15);
+    BOMB.y = -BOMB.size;
+    BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size * 2) + BOMB.size);
+    BOMB.speedy = Math.floor(Math.random() * maxSpeed + 10);
 }
 
+//Процедура движения бомбы по экрану и проверки на столкновения
+function updateBombs() {
+    BOMB.y += BOMB.speedy;
+    var losePositionY = BOMB.y + BOMB.size >= PLAYER.y;
+    var losePositionX = (BOMB.x - BOMB.size <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.size >= PLAYER.x);
+    var scoreUpdate = (BOMB.y >= GAME.height + BOMB.size) && !GAME.ifLost;
+    if (scoreUpdate) {
+        respawnBomb();
+        PLAYER.score++;
+    }
+    if (losePositionX && losePositionY) {
+        respawnBomb();
+        PLAYER.lives -= 1;
+        if (PLAYER.lives === 0) {
+            GAME.ifLost = true;
+        }
+    }
+}
 
+//Стираем экран и вызываем процедуры отрисовки всех обьектов
 function drawFrame() {
     canvasContext.clearRect(0, 0, GAME.width, GAME.height);
     drawBackground();
     drawPlayer();
     drawBomb();
-    drawInfoWindow()
+    drawInfoWindow();
 }
 
+//Двигаем игрока и проверяем выходит ли он за границы
 function updatePlayer() {
     if (PLAYER.x + PLAYER.width > GAME.width) {
         PLAYER.x = GAME.width - PLAYER.width;
@@ -142,18 +126,26 @@ function updatePlayer() {
     }
 }
 
+//Иницилизируем функции работы с клавиатурой и мышью
 function initEventListeners() {
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("keydown", onKeyDown)
 }
 
+//Присваиваем координату x курсора игроку
 function onMouseMove(event) {
-    if (event.clientX + PLAYER.width < GAME.width) {
-        PLAYER.x = event.clientX;
+    if ((event.clientX + PLAYER.width < GAME.width) && (event.clientX - PLAYER.width / 2 > 0)) {
+        PLAYER.x = event.clientX - PLAYER.width / 2;
     } else {
-        PLAYER.x = GAME.width - PLAYER.width;
+        if ((event.clientX + PLAYER.width > GAME.width)){
+            PLAYER.x = GAME.width - PLAYER.width;
+        } else{
+            PLAYER.x = 0;
+        }
     }
 }
+
+//Двигаем игрока в зависимости от нажатой клавиши
 function onKeyDown(event) {
     if ((event.key === "ArrowLeft") && (PLAYER.x > 0)) {
         PLAYER.x -= PLAYER.speedX;
@@ -163,13 +155,18 @@ function onKeyDown(event) {
     }
 }
 
+//Основной цикл программы, вызываем процедуры работы с обьектами пока не проиграем
 function play() {
-    drawFrame();
-    updateBombs();
-    updatePlayer();
-    requestAnimationFrame(play);
+    if (GAME.ifLost === false) {
+        drawFrame();
+        updateBombs();
+        updatePlayer();
+        requestAnimationFrame(play);
+    } else {
+        drawFrame();
+        alert("You lose!");
+    }
 }
 
-InitBombs();
 initEventListeners();
 play();
