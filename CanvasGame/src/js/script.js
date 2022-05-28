@@ -7,6 +7,7 @@ var GAME = {
 var BOMBS = [];
 
 var countOfBombs = 2;
+var bombSpeed = 20;
 var bombSize = 20;
 
 var InfoWindow = {
@@ -37,7 +38,7 @@ function InitBombs() {
         var initSpeed = Math.floor(Math.random() * 20 + 5);
         BOMBS[i] = {
             x: initX,
-            y: -20,
+            y: 0,
             speedy: initSpeed,
             size: 20,
         }
@@ -100,7 +101,7 @@ function updateBombs() {
                 var initSpeed = Math.floor(Math.random() * 20 + 5);
                 BOMBS[countOfBombs] = {
                     x: initX,
-                    y: -20,
+                    y: 0,
                     speedy: initSpeed,
                     size: 20,
                 }
@@ -110,11 +111,12 @@ function updateBombs() {
             console.log("score: " + PLAYER.score);
         }
         if (losePositionX && losePositionY && !GAME.ifLost) {
-            PLAYER.lives -= 1;
-            BOMBS[i].y = 0;
-            BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             if (PLAYER.lives === 0) {
                 GAME.ifLost = true;
+            } else {
+                PLAYER.lives -= 1;
+                BOMBS[i].y = 0;
+                BOMBS[i].x = Math.floor(Math.random() * (GAME.width - BOMBS[i].size));
             }
         }
         i++;
@@ -152,7 +154,6 @@ function onMouseMove(event) {
         PLAYER.x = GAME.width - PLAYER.width;
     }
 }
-
 function onKeyDown(event) {
     if ((event.key === "ArrowLeft") && (PLAYER.x > 0)) {
         PLAYER.x -= PLAYER.speedX;
@@ -163,15 +164,10 @@ function onKeyDown(event) {
 }
 
 function play() {
-    if (GAME.ifLost === false) {
-        drawFrame();
-        updateBombs();
-        updatePlayer();
-        requestAnimationFrame(play);
-    } else {
-        drawFrame();
-        alert("You lose!");
-    }
+    drawFrame();
+    updateBombs();
+    updatePlayer();
+    requestAnimationFrame(play);
 }
 
 InitBombs();
