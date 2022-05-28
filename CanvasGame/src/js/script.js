@@ -3,7 +3,14 @@ var GAME = {
     width: 600,
     height: 870,
     ifLost: false,
-    backgroundColor: "red"
+    backgroundColor: "#21007E",
+    background: null,
+}
+
+var ENEMY = {
+    width: 222,
+    height: 122,
+    nlo: null,
 }
 
 //Добавляем окно с доп. информацией(жизни и очки), задаем ширину, длинну, положение на экране, задаем цвет фона и текста
@@ -12,19 +19,23 @@ var InfoWindow = {
     height: GAME.height,
     x: GAME.width,
     backgroundColor: "black",
-    textColor: "white"
+    textColor: "white",
+    livex: 610,
+    livey: 135,
 }
 
 //Создаем игрока, адаптируем размеры и положение под экран, добавляем переменные счетчика очков, жизней, также даем игроку скорость, цвет
 var PLAYER = {
     x: GAME.width * 0.45,
-    y: GAME.height * 0.9,
-    height: GAME.height * 0.03,
-    width: GAME.width * 0.07,
+    y: GAME.height - 134,
+    height: 134,
+    width: 53,
     score: 0,
     lives: 3,
     speedX: 20,
-    color: "white"
+    color: "white",
+    hero: null,
+    live: null,
 }
 
 //Добавляем константы для случайно генерации бомд
@@ -34,10 +45,11 @@ var maxSpeed = 20;
 //Создаем бомбу, случайное расположение по экрану, случайный размер, положение за экраном, случайная скорость и указываем цвет
 var BOMB = {
     x: Math.floor(Math.random() * (GAME.width - maxSize * 2) + maxSize),
-    size: Math.floor(Math.random() * maxSize + 5),
-    y: -maxSize,
+    width: Math.floor(Math.random() * maxSize + 20),
+    y: ENEMY.height + maxSize,
     speedy: Math.floor(Math.random() * maxSpeed + 5),
-    color: "black"
+    color: "black",
+    meteor: null,
 }
 
 //Создание инструментов рисования и разметки границ холста
@@ -46,24 +58,63 @@ var canvasContext = canvas.getContext("2d");
 canvas.width = GAME.width + InfoWindow.width;
 canvas.height = GAME.height;
 
+let nlo = new Image(),
+    background = new Image(),
+    meteor = new Image()
+    hero = new Image(),
+    live = new Image();
+
+nlo.src = '../img/nlo.png';
+background.src = '../img/bg.png';
+meteor.src = '../img/meteor.png';
+hero.src = '../img/hero.png';
+live.src = '../img/live.png';
+
+nlo.onload = function () {
+    ENEMY.nlo = nlo;
+}
+
+background.onload = function () {
+    GAME.background = background;
+}
+
+meteor.onload = function () {
+    BOMB.meteor = meteor;
+}
+
+hero.onload = function () {
+    PLAYER.hero = hero;
+}
+
+live.onload = function () {
+    PLAYER.live = live;
+}
+
 //Отрисовка фона
 function drawBackground() {
-    canvasContext.fillStyle = GAME.backgroundColor;
-    canvasContext.fillRect(0, 0, GAME.width, GAME.height);
+    if (GAME.background) {
+        canvasContext.drawImage(GAME.background, 0, 0);
+    }
 }
 
 //Отрисовываем игрока
 function drawPlayer() {
-    canvasContext.fillStyle = PLAYER.color;
-    canvasContext.fillRect(PLAYER.x, PLAYER.y, PLAYER.width, PLAYER.height);
+    if (PLAYER.hero) {
+        canvasContext.drawImage(PLAYER.hero, PLAYER.x, PLAYER.y)
+    }
+}
+
+function drawEnemy() {
+    if (ENEMY.nlo) {
+        canvasContext.drawImage(ENEMY.nlo, (GAME.width - ENEMY.width) / 2, 0, 222, 122);
+    }
 }
 
 //Отрисовываем бомбу
 function drawBomb() {
-    canvasContext.fillStyle = BOMB.color;
-    canvasContext.beginPath();
-    canvasContext.arc(BOMB.x, BOMB.y, BOMB.size, 0, Math.PI * 2);
-    canvasContext.fill();
+    if (BOMB.meteor) {
+        canvasContext.drawImage(BOMB.meteor, BOMB.x, BOMB.y, BOMB.width, BOMB.width * 1.7);
+    }
 }
 
 //Отрисовываем окно для вывода доп. данных и выводим там сами данные
@@ -76,24 +127,50 @@ function drawInfoWindow() {
     canvasContext.font = "30px serif";
     canvasContext.fillText("Your score:", InfoWindow.x + 10, 50);
     canvasContext.fillText(PLAYER.score, InfoWindow.x + 10, 85);
-    canvasContext.fillText("Your lives:", InfoWindow.x + 10, 120);
-    canvasContext.fillText(PLAYER.lives, InfoWindow.x + 10, 155);
+    canvasContext.fillText("Your lives:", InfoWindow.livex, 120);
+    // canvasContext.fillText(PLAYER.lives, InfoWindow.x + 10, 155);
+}
+
+function drawLives() {
+    if (PLAYER.live) {
+        switch (PLAYER.lives) {
+            case 3:
+                for (let i = 0; i < 3; i++) {
+                    canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
+                }
+                break;
+
+            case 2:
+                for (let i = 0; i < 2; i++) {
+                    canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
+                }
+                break;
+
+            case 1:
+                for (let i = 0; i < 1; i++) {
+                    canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
+                }
+                break;
+
+        }
+
+    }
 }
 
 //Создаем процедуру случайной генерации бомбы после ее падения или столкновения
 function respawnBomb(){
-    BOMB.size = Math.floor(Math.random() * maxSize + 15);
-    BOMB.y = -BOMB.size;
-    BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size * 2) + BOMB.size);
+    BOMB.width = Math.floor(Math.random() * maxSize + 30);
+    BOMB.y = ENEMY.height + BOMB.width;
+    BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.width * 2) + BOMB.width);
     BOMB.speedy = Math.floor(Math.random() * maxSpeed + 10);
 }
 
 //Процедура движения бомбы по экрану и проверки на столкновения
 function updateBombs() {
     BOMB.y += BOMB.speedy;
-    var losePositionY = BOMB.y + BOMB.size >= PLAYER.y;
-    var losePositionX = (BOMB.x - BOMB.size <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.size >= PLAYER.x);
-    var scoreUpdate = (BOMB.y >= GAME.height + BOMB.size) && !GAME.ifLost;
+    var losePositionY = BOMB.y + BOMB.width >= PLAYER.y;
+    var losePositionX = (BOMB.x - BOMB.width <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.width >= PLAYER.x);
+    var scoreUpdate = (BOMB.y >= GAME.height + BOMB.width) && !GAME.ifLost;
     if (scoreUpdate) {
         respawnBomb();
         PLAYER.score++;
@@ -113,7 +190,9 @@ function drawFrame() {
     drawBackground();
     drawPlayer();
     drawBomb();
+    drawEnemy();
     drawInfoWindow();
+    drawLives();
 }
 
 //Двигаем игрока и проверяем выходит ли он за границы
@@ -164,7 +243,7 @@ function play() {
         requestAnimationFrame(play);
     } else {
         drawFrame();
-        alert("You lose!");
+        // alert("You lose!");
     }
 }
 
