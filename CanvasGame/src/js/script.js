@@ -22,7 +22,7 @@ var limitTarget = 35;
 var InfoWindow = {
     width: 200,
     height: GAME.height,
-    x: GAME.width
+    x: GAME.width,
 }
 
 var PLAYER = {
