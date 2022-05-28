@@ -123,8 +123,8 @@ function drawInfoWindow() {
     canvasContext.beginPath();
     canvasContext.rect(InfoWindow.x, 0, InfoWindow.width, InfoWindow.height);
     canvasContext.fill();
+    canvasContext.font = '30px Montserrat';
     canvasContext.fillStyle = InfoWindow.textColor;
-    canvasContext.font = "30px serif";
     canvasContext.fillText("Your score:", InfoWindow.x + 10, 50);
     canvasContext.fillText(PLAYER.score, InfoWindow.x + 10, 85);
     canvasContext.fillText("Your lives:", InfoWindow.livex, 120);
