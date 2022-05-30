@@ -34,8 +34,8 @@ var maxSpeed = 20;
 //Создаем бомбу, случайное расположение по экрану, случайный размер, положение за экраном, случайная скорость и указываем цвет
 var BOMB = {
     x: Math.floor(Math.random() * (GAME.width - maxSize * 2) + maxSize),
-    size: Math.floor(Math.random() * maxSize + 5),
     y: -maxSize,
+    size: Math.floor(Math.random() * maxSize + 5),
     speedy: Math.floor(Math.random() * maxSpeed + 5),
     color: "black"
 }
@@ -170,3 +170,4 @@ function play() {
 
 initEventListeners();
 play();
+
