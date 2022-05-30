@@ -27,7 +27,7 @@ var InfoWindow = {
 //Создаем игрока, адаптируем размеры и положение под экран, добавляем переменные счетчика очков, жизней, также даем игроку скорость, цвет
 var PLAYER = {
     x: GAME.width * 0.45,
-    y: GAME.height - 134,
+    y: GAME.height - 136,
     height: 134,
     width: 53,
     score: 0,
@@ -40,13 +40,15 @@ var PLAYER = {
 
 //Добавляем константы для случайно генерации бомд
 var maxSize = 50;
-var maxSpeed = 20;
+var maxSpeed = 12;
+var minSpeed  = 10;
+var minSize = 30;
 
 //Создаем бомбу, случайное расположение по экрану, случайный размер, положение за экраном, случайная скорость и указываем цвет
 var BOMB = {
-    x: Math.floor(Math.random() * (GAME.width - maxSize * 2) + maxSize),
-    width: Math.floor(Math.random() * maxSize + 20),
+    x: Math.floor(Math.random() * (GAME.width - maxSize)),
     y: ENEMY.height + maxSize,
+    width: Math.floor(Math.random() * maxSize + 20),
     speedy: Math.floor(Math.random() * maxSpeed + 5),
     color: "black",
     meteor: null,
@@ -60,7 +62,7 @@ canvas.height = GAME.height;
 
 let nlo = new Image(),
     background = new Image(),
-    meteor = new Image()
+    meteor = new Image(),
     hero = new Image(),
     live = new Image();
 
@@ -128,48 +130,29 @@ function drawInfoWindow() {
     canvasContext.fillText("Your score:", InfoWindow.x + 10, 50);
     canvasContext.fillText(PLAYER.score, InfoWindow.x + 10, 85);
     canvasContext.fillText("Your lives:", InfoWindow.livex, 120);
-    // canvasContext.fillText(PLAYER.lives, InfoWindow.x + 10, 155);
 }
 
 function drawLives() {
     if (PLAYER.live) {
-        switch (PLAYER.lives) {
-            case 3:
-                for (let i = 0; i < 3; i++) {
-                    canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
-                }
-                break;
-
-            case 2:
-                for (let i = 0; i < 2; i++) {
-                    canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
-                }
-                break;
-
-            case 1:
-                for (let i = 0; i < 1; i++) {
-                    canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
-                }
-                break;
-
+        for (let i = 0; i < PLAYER.lives; i++) {
+            canvasContext.drawImage(PLAYER.live, InfoWindow.livex + i * 35, InfoWindow.livey);
         }
-
     }
 }
 
 //Создаем процедуру случайной генерации бомбы после ее падения или столкновения
 function respawnBomb(){
-    BOMB.width = Math.floor(Math.random() * maxSize + 30);
+    BOMB.width = Math.floor(Math.random() * maxSize + minSize);
     BOMB.y = ENEMY.height + BOMB.width;
-    BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.width * 2) + BOMB.width);
-    BOMB.speedy = Math.floor(Math.random() * maxSpeed + 10);
+    BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.width));
+    BOMB.speedy = Math.floor(Math.random() * maxSpeed + minSpeed);
 }
 
 //Процедура движения бомбы по экрану и проверки на столкновения
 function updateBombs() {
     BOMB.y += BOMB.speedy;
     var losePositionY = BOMB.y + BOMB.width >= PLAYER.y;
-    var losePositionX = (BOMB.x - BOMB.width <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.width >= PLAYER.x);
+    var losePositionX = (BOMB.x <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.width >= PLAYER.x);
     var scoreUpdate = (BOMB.y >= GAME.height + BOMB.width) && !GAME.ifLost;
     if (scoreUpdate) {
         respawnBomb();
@@ -189,7 +172,8 @@ function drawFrame() {
     canvasContext.clearRect(0, 0, GAME.width, GAME.height);
     drawBackground();
     drawPlayer();
-    drawBomb();
+    if (GAME.ifLost === false)
+        drawBomb();
     drawEnemy();
     drawInfoWindow();
     drawLives();
