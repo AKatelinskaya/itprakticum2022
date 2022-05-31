@@ -118,16 +118,6 @@ function drawFrame() {
     drawInfoWindow();
 }
 
-//Двигаем игрока и проверяем выходит ли он за границы
-function updatePlayer() {
-    if (PLAYER.x + PLAYER.width > GAME.width) {
-        PLAYER.x = GAME.width - PLAYER.width;
-    }
-    if (PLAYER.x < 0) {
-        PLAYER.x = 0;
-    }
-}
-
 //Иницилизируем функции работы с клавиатурой и мышью
 function initEventListeners() {
     window.addEventListener("mousemove", onMouseMove);
