@@ -4,13 +4,11 @@ var GAME = {
     height: 870,
     ifLost: false,
     backgroundColor: "#21007E",
-    background: null,
 }
 
 var ENEMY = {
     width: 222,
     height: 122,
-    nlo: null,
 }
 
 //Добавляем окно с доп. информацией(жизни и очки), задаем ширину, длинну, положение на экране, задаем цвет фона и текста
@@ -34,8 +32,6 @@ var PLAYER = {
     lives: 3,
     speedX: 20,
     color: "white",
-    hero: null,
-    live: null,
 }
 
 //Добавляем константы для случайно генерации бомд
@@ -51,7 +47,6 @@ var BOMB = {
     width: Math.floor(Math.random() * maxSize + 20),
     speedy: Math.floor(Math.random() * maxSpeed + 5),
     color: "black",
-    meteor: null,
 }
 
 //Создание инструментов рисования и разметки границ холста
