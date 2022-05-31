@@ -40,6 +40,8 @@ var BOMB = {
     color: "black"
 }
 
+
+
 //Создание инструментов рисования и разметки границ холста
 var canvas = document.getElementById("canvas");
 var canvasContext = canvas.getContext("2d");
@@ -93,7 +95,7 @@ function updateBombs() {
     BOMB.y += BOMB.speedy;
     var losePositionY = BOMB.y + BOMB.size >= PLAYER.y;
     var losePositionX = (BOMB.x - BOMB.size <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.size >= PLAYER.x);
-    var scoreUpdate = (BOMB.y >= GAME.height + BOMB.size) && !GAME.ifLost;
+    var scoreUpdate = BOMB.y >= GAME.height + BOMB.size;
     if (scoreUpdate) {
         respawnBomb();
         PLAYER.score++;
