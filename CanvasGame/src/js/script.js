@@ -101,11 +101,11 @@ function updateBombs() {
         PLAYER.score++;
     }
     if (losePositionX && losePositionY) {
-        respawnMeteor();
-        PLAYER.lives -= 1;
-        if (PLAYER.lives === 0) {
-            GAME.ifLost = true;
-        }
+            respawnMeteor();
+            PLAYER.lives -= 1;
+            if (PLAYER.lives === 0) {
+                GAME.ifLost = true;
+            }
     }
 }
 
@@ -152,7 +152,6 @@ function play() {
     if (GAME.ifLost === false) {
         drawFrame();
         updateBombs();
-        updatePlayer();
         requestAnimationFrame(play);
     } else {
         drawFrame();
