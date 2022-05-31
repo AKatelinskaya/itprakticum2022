@@ -83,7 +83,7 @@ function drawInfoWindow() {
 }
 
 //Создаем процедуру случайной генерации бомбы после ее падения или столкновения
-function respawnBomb(){
+function respawnMeteor(){
     BOMB.size = Math.floor(Math.random() * maxSize + 15);
     BOMB.y = -BOMB.size;
     BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size * 2) + BOMB.size);
@@ -97,11 +97,11 @@ function updateBombs() {
     var losePositionX = (BOMB.x - BOMB.size <= PLAYER.x + PLAYER.width) && (BOMB.x + BOMB.size >= PLAYER.x);
     var scoreUpdate = BOMB.y >= GAME.height + BOMB.size;
     if (scoreUpdate) {
-        respawnBomb();
+        respawnMeteor();
         PLAYER.score++;
     }
     if (losePositionX && losePositionY) {
-        respawnBomb();
+        respawnMeteor();
         PLAYER.lives -= 1;
         if (PLAYER.lives === 0) {
             GAME.ifLost = true;
