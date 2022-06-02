@@ -3,7 +3,7 @@ var GAME = {
     width: 600,
     height: 870,
     ifLost: false,
-    backgroundColor: "#21007E",
+    backgroundColor: "#0d7e00",
 }
 
 var ENEMY = {
@@ -93,8 +93,6 @@ function drawBackground() {
         canvasContext.drawImage(GAME.background, 0, 0);
     }
 }
-
-//Отрисовываем игрока
 function drawPlayer() {
     if (PLAYER.hero) {
         canvasContext.drawImage(PLAYER.hero, PLAYER.x, PLAYER.y)
@@ -103,7 +101,7 @@ function drawPlayer() {
 
 function drawEnemy() {
     if (ENEMY.nlo) {
-        canvasContext.drawImage(ENEMY.nlo, (GAME.width - ENEMY.width) / 2, 0, 222, 122);
+        canvasContext.drawImage(ENEMY.nlo, (GAME.width - ENEMY.width) / 2, 0, ENEMY.width, ENEMY.height);
     }
 }
 
@@ -134,6 +132,10 @@ function drawLives() {
         }
     }
 }
+
+
+var arr = [14, 26, 31];
+console.log(arr[2])
 
 //Создаем процедуру случайной генерации бомбы после ее падения или столкновения
 function respawnBomb(){
@@ -166,6 +168,7 @@ function updateBombs() {
 function drawFrame() {
     canvasContext.clearRect(0, 0, GAME.width, GAME.height);
     drawBackground();
+    drawEnemy()
     drawPlayer();
     if (GAME.ifLost === false)
         drawBomb();
