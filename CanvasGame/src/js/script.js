@@ -61,11 +61,11 @@ let nlo = new Image(),
     hero = new Image(),
     live = new Image();
 
-nlo.src = '../img/nlo.png';
-background.src = '../img/bg.png';
-meteor.src = '../img/meteor.png';
-hero.src = '../img/hero.png';
-live.src = '../img/live.png';
+nlo.src = '/src/img/nlo.png';
+background.src = '/src/img/bg.png';
+meteor.src = '/src/img/meteor.png';
+hero.src = '/src/img/hero.png';
+live.src = '/src/img/live.png';
 
 nlo.onload = function () {
     ENEMY.nlo = nlo;
