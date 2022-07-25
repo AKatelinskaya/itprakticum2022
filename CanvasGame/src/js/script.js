@@ -41,7 +41,6 @@ var BOMB = {
 }
 
 
-
 //Создание инструментов рисования и разметки границ холста
 var canvas = document.getElementById("canvas");
 var canvasContext = canvas.getContext("2d");
@@ -82,8 +81,21 @@ function drawInfoWindow() {
     canvasContext.fillText(PLAYER.lives, InfoWindow.x + 10, 155);
 }
 
+//Рисуем экран проигрыша и итоговый счёт
+function drawLoseScreen() {
+    canvasContext.clearRect(0, 0, GAME.width + InfoWindow.width, GAME.height + InfoWindow.width);
+    drawBackground();
+    canvasContext.fillStyle = PLAYER.color;
+    canvasContext.font = "96px Arial";
+    canvasContext.textAlign = "center";
+    canvasContext.fillText("LOSE", GAME.width / 2, GAME.height / 2);
+    canvasContext.font = "68px Arial";
+    canvasContext.fillText("Your score: " + PLAYER.score, GAME.width / 2, GAME.height / 2 + 100)
+}
+
+
 //Создаем процедуру случайной генерации бомбы после ее падения или столкновения
-function respawnMeteor(){
+function respawnMeteor() {
     BOMB.size = Math.floor(Math.random() * maxSize + 15);
     BOMB.y = -BOMB.size;
     BOMB.x = Math.floor(Math.random() * (GAME.width - BOMB.size * 2) + BOMB.size);
@@ -101,11 +113,11 @@ function updateBombs() {
         PLAYER.score++;
     }
     if (losePositionX && losePositionY) {
-            respawnMeteor();
-            PLAYER.lives -= 1;
-            if (PLAYER.lives === 0) {
-                GAME.ifLost = true;
-            }
+        respawnMeteor();
+        PLAYER.lives -= 1;
+        if (PLAYER.lives === 0) {
+            GAME.ifLost = true;
+        }
     }
 }
 
@@ -126,14 +138,12 @@ function initEventListeners() {
 
 //Присваиваем координату x курсора игроку
 function onMouseMove(event) {
-    if ((event.clientX + PLAYER.width < GAME.width) && (event.clientX - PLAYER.width / 2 > 0)) {
-        PLAYER.x = event.clientX - PLAYER.width / 2;
-    } else {
-        if ((event.clientX + PLAYER.width > GAME.width)){
-            PLAYER.x = GAME.width - PLAYER.width;
-        } else{
-            PLAYER.x = 0;
-        }
+    PLAYER.x = event.clientX - PLAYER.width / 2;
+    if (PLAYER.x + PLAYER.width > GAME.width) {
+        PLAYER.x = GAME.width - PLAYER.width;
+    }
+    if (PLAYER.x < 0) {
+        PLAYER.x = 0;
     }
 }
 
@@ -149,13 +159,13 @@ function onKeyDown(event) {
 
 //Основной цикл программы, вызываем процедуры работы с обьектами пока не проиграем
 function play() {
-    if (GAME.ifLost === false) {
-        drawFrame();
+    drawFrame();
+    if (PLAYER.lives > 0) {
         updateBombs();
         requestAnimationFrame(play);
-    } else {
-        drawFrame();
-        alert("You lose!");
+    }
+    if (PLAYER.lives === 0) {
+        drawLoseScreen();
     }
 }
 
